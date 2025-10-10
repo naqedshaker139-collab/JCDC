@@ -1,12 +1,20 @@
 services:
   - type: web
-    name: node-api-template
-    env: node
+    name: jcdc-backend
+    env: python
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    rootDir: equipment-management-backend
+    buildCommand: pip install -r requirements.txt && pip install gunicorn
+    startCommand: gunicorn "src.main:app" --bind 0.0.0.0:$PORT --workers 2
     healthCheckPath: /
     autoDeploy: true
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  - type: static
+    name: jcdc-frontend
+    rootDir: equipment-management-frontend
+    buildCommand: corepack enable && pnpm i --frozen-lockfile && pnpm build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: true
