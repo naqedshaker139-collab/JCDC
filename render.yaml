@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: node-api-template
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
