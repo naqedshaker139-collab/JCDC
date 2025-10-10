@@ -1,7 +1,8 @@
 services:
+  # Python/Flask backend
   - type: web
     name: jcdc-backend
-    env: python
+    runtime: python
     plan: free
     rootDir: equipment-management-backend
     buildCommand: pip install -r requirements.txt && pip install gunicorn
@@ -12,9 +13,16 @@ services:
       - key: PYTHONUNBUFFERED
         value: "1"
 
-  - type: static
+  # Vite frontend (static site)
+  - type: web
     name: jcdc-frontend
+    runtime: static
+    plan: free
     rootDir: equipment-management-frontend
     buildCommand: corepack enable && pnpm i --frozen-lockfile && pnpm build
     staticPublishPath: dist
     pullRequestPreviewsEnabled: true
+    # Optionally, set this after backend is live:
+    # envVars:
+    #   - key: VITE_API_URL
+    #     value: https://jcdc-backend.onrender.com
