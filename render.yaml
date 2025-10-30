@@ -1,22 +1,22 @@
 services:
-  # Python/Flask backend
   - type: web
-    name: jcdc-backend
-    runtime: python
-    rootDir: equipment-management-backend
-    buildCommand: pip install -r requirements.txt && pip install gunicorn
-    startCommand: gunicorn "src.main:app" --bind 0.0.0.0:$PORT --workers 2
-    healthCheckPath: /
-    autoDeploy: true
-    envVars:
-      - key: PYTHONUNBUFFERED
-        value: "1"
+    name: jcdc-app
+    env: python
 
-  # Vite frontend (static site)
-  - type: web
-    name: jcdc-frontend
-    runtime: static
-    rootDir: equipment-management-frontend
-    buildCommand: corepack enable && pnpm i --frozen-lockfile && pnpm build
-    staticPublishPath: dist
-    pullRequestPreviewsEnabled: true
+    buildCommand: |
+      pip install -r requirements.txt
+      corepack enable || true
+      cd equipment-management-frontend
+      pnpm install
+      pnpm build
+      cd ..
+      mkdir -p static
+      cp -R equipment-management-frontend/dist/* static/ || true
+
+    startCommand: gunicorn wsgi:app -w 3 -k gthread -b 0.0.0.0:$PORT --timeout 120
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: SECRET_KEY
+        generateValue: true

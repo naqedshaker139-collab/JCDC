@@ -1,0 +1,6 @@
+Flask
+Flask-Login
+Flask-CORS
+SQLAlchemy
+pandas
+gunicorn
