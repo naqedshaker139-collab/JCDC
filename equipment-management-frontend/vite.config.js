@@ -1,14 +1,22 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { fileURLToPath, URL } from 'node:url';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-})
+plugins: [react()],
+resolve: {
+alias: {
+'@': fileURLToPath(new URL('./src', import.meta.url)),
+},
+},
+server: {
+host: true, // expose to LAN
+port: 5173,
+proxy: {
+'/api': {
+target: 'http://10.10.26.210:5000', // <-- your LAN IP here
+changeOrigin: true,
+},
+},
+},
+});

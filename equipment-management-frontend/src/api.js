@@ -1,16 +1,29 @@
 import axios from 'axios';
 
-// Configure axios defaults
-axios.defaults.baseURL = window.location.origin;
-axios.defaults.timeout = 10000;
+const base = import.meta.env?.VITE_API_BASE || '/api';
 
-// Add request interceptor for error handling
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
+const api = axios.create({
+  baseURL: base,
+  withCredentials: true,
+  timeout: 20000,
+  headers: {
+    Accept: 'application/json',
+  },
+});
+
+// 401 redirect to /login if you added auth
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (
+      err?.response?.status === 401 &&
+      !window.location.pathname.startsWith('/login')
+    ) {
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
   }
 );
 
-export default axios;
+export default api;
+

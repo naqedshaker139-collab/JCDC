@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-white text-xl font-bold">CRCC Equipment</h1>
+                <h1 className="text-white text-xl font-bold">JCDC,CRCC & PMV </h1>
               </div>
               
               {/* Desktop Navigation */}
