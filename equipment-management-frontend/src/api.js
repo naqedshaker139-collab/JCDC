@@ -11,7 +11,6 @@ const api = axios.create({
   },
 });
 
-// 401 redirect to /login if you added auth
 api.interceptors.response.use(
   (res) => res,
   (err) => {

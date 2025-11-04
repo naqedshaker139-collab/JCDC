@@ -1,0 +1,36 @@
+Python
+pycache/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+.venv/
+env/
+venv/
+
+SQLite and app instance
+database/*.db
+instance/
+*.sqlite
+
+Node/Vite
+node_modules/
+equipment-management-frontend/node_modules/
+equipment-management-frontend/dist/
+equipment-management-frontend/.vite/
+equipment-management-frontend/.eslintcache
+
+Environment files
+.env
+.env.
+!.env.example
+
+OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+Archives
+*.zip
+*.tar
+*.gz
