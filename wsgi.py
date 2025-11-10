@@ -1,12 +1,13 @@
 # In backend/wsgi.py
 
 from src.main import app
-from src.seed_data import seed_data
+from src.seed_data import seed_database # Import the function
 
-# --- ADD THIS CODE BLOCK ---
+# --- ADDED: Call the seeding function before the app starts ---
+# This ensures the database is populated every time the service wakes up
 with app.app_context():
-    seed_data()
-# ---------------------------
+    seed_database()
+# -------------------------------------------------------------
 
 if __name__ == "__main__":
     app.run()
