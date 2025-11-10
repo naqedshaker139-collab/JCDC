@@ -1,3 +1,5 @@
+# In backend/wsgi.py
+
 from src.main import app
 from src.seed_data import seed_data
 
