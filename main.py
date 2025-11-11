@@ -20,9 +20,9 @@ from src.routes.equipment import equipment_bp
 Single Flask app; static serves the built frontend from JCDC/static
 app = Flask(name, static_folder=str(BASE / 'static'), static_url_path='')
 
------------------------------------------------------------------------------
-Config: SECRET_KEY and DATABASE_URL with local SQLite fallback
------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+#Config: SECRET_KEY and DATABASE_URL with local SQLite fallback
+#-----------------------------------------------------------------------------
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-insecure-key')
 
 Prefer DATABASE_URL (e.g., Neon Postgres). Fallback to your local SQLite path for dev.
@@ -39,9 +39,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 Optional: print once on startup to verify which DB is used (shows in Render logs)
 print("DB URI:", app.config['SQLALCHEMY_DATABASE_URI'])
 
------------------------------------------------------------------------------
-CORS, Blueprints, and DB init
------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+#CORS, Blueprints, and DB init
+#-----------------------------------------------------------------------------
 CORS(app) # adjust origins later if hosting frontend on a different domain
 app.register_blueprint(equipment_bp, url_prefix='/api')
 
@@ -51,9 +51,9 @@ with app.app_context():
     (BASE / 'database').mkdir(parents=True, exist_ok=True)
     db.create_all()
 
------------------------------------------------------------------------------
-SPA catch-all: serve built frontend and static assets
------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------
+#SPA catch-all: serve built frontend and static assets
+#-----------------------------------------------------------------------------
 @app.route('/', defaults={'path': ''})
 @app.route('/')
 def serve(path: str):
