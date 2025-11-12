@@ -1,7 +1,6 @@
 import os
 import sys
 from pathlib import Path
-from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 
 from flask import Flask, send_from_directory, request
 from flask_cors import CORS
@@ -13,6 +12,7 @@ BASE = Path(__file__).resolve().parent
 
 BACKEND_DIR = BASE / "equipment-management-backend"
 SRC_DIR = BACKEND_DIR / "src"
+
 for p in (BACKEND_DIR, SRC_DIR):
     ap = str(p.resolve())
     if p.exists() and ap not in sys.path:
@@ -24,7 +24,9 @@ if ZIPPED_BACKEND.exists():
     if zp not in sys.path:
         sys.path.insert(0, zp)
 
+# -----------------------------------------------------------------------------
 # Import after sys.path setup
+# -----------------------------------------------------------------------------
 from src.models.equipment import db
 from src.routes.equipment import equipment_bp
 
@@ -34,31 +36,11 @@ from src.routes.equipment import equipment_bp
 app = Flask(__name__, static_folder=str(BASE / "static"), static_url_path="")
 
 # -----------------------------------------------------------------------------
-# SECRET_KEY and DATABASE_URL (Neon) with local SQLite fallback
-# Normalize Neon URL for pg8000: replace sslmode=require with ssl=true
+# SECRET_KEY and DATABASE_URL with local SQLite fallback
 # -----------------------------------------------------------------------------
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-insecure-key")
 
-
-def _normalize_pg8000_url(url: str) -> str:
-    try:
-        u = urlparse(url)
-        if (u.scheme or "").startswith("postgresql+pg8000"):
-            q = dict(parse_qsl(u.query, keep_blank_values=True))
-            if "sslmode" in q:
-                q.pop("sslmode", None)
-            q.setdefault("ssl", "true")
-            new_query = urlencode(q)
-            return urlunparse((u.scheme, u.netloc, u.path, u.params, new_query, u.fragment))
-    except Exception:
-        pass
-    return url
-
-
 db_url = os.getenv("DATABASE_URL")
-if db_url:
-    db_url = _normalize_pg8000_url(db_url)
-
 if not db_url:
     default_sqlite = (BACKEND_DIR / "src" / "database" / "app.db").resolve()
     default_sqlite.parent.mkdir(parents=True, exist_ok=True)
@@ -66,9 +48,6 @@ if not db_url:
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-if db_url.startswith("postgresql+pg8000://") and "ssl=" not in db_url:
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"connect_args": {"ssl": True}}
 
 print("DB URI:", app.config["SQLALCHEMY_DATABASE_URI"])
 
@@ -89,7 +68,7 @@ with app.app_context():
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve(path: str):
-    candidate = (Path(app.static_folder) / path)
+    candidate = Path(app.static_folder) / path
     if path and candidate.is_file():
         return send_from_directory(app.static_folder, path)
     return send_from_directory(app.static_folder, "index.html")
