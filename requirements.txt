@@ -6,3 +6,4 @@ SQLAlchemy
 pandas
 gunicorn
 pg8000
+psycopg[binary]
